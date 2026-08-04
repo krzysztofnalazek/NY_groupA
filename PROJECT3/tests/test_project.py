@@ -9,6 +9,7 @@ from src.exposure import calculate_exposures
 from src.models.cir import simulate_cir
 from src.models.vasicek import simulate_vasicek, zero_coupon_bond
 from src.pricing.black_scholes import option_price
+from src.pricing.least_squares_monte_carlo import american_option_value
 from src.wwr import weighted_quantile
 
 
@@ -44,6 +45,24 @@ class ModelTests(unittest.TestCase):
         paths = simulate_vasicek(0.04, 0.03, 0.50, 0.01, time_grid, shocks)
         expected = 0.03 + (0.04 - 0.03) * np.exp(-0.50)
         self.assertAlmostEqual(paths[0, 1], expected)
+
+    def test_lsm_american_put_can_exercise_early(self):
+        time_grid = np.linspace(0, 1, 5)
+        spot_paths = np.full((20, 5), 50.0)
+        rate_paths = np.full((20, 5), 0.10)
+
+        values = american_option_value(
+            spot_paths,
+            rate_paths,
+            time_grid,
+            strike=100.0,
+            maturity=1.0,
+            option_type="put",
+            exercise_dates_per_year=4,
+        )
+
+        self.assertAlmostEqual(values[0, 0], 50.0)
+        self.assertEqual(values[0, -1], 0.0)
 
 
 class ExposureTests(unittest.TestCase):

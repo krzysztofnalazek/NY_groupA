@@ -4,7 +4,7 @@ import pandas as pd
 
 def make_portfolio_table(inputs):
     options = inputs["options"].copy()
-    options.insert(2, "product", "European option")
+    options.insert(2, "product", options["exercise_style"].str.title() + " option")
 
     swaps = inputs["swaps"].copy()
     swaps.insert(2, "product", "Interest rate swap")
