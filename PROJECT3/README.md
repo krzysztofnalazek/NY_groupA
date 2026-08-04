@@ -14,13 +14,14 @@ but it is not required to run `PROJECT3` or submit the folder.
 2. Simulates correlated equity indexes with geometric Brownian motion.
 3. Simulates the USD short rate with the exact Vasicek transition.
 4. Revalues European options with Black-Scholes.
-5. Revalues fixed-for-floating swaps using Vasicek zero-coupon bond prices.
-6. Nets signed trade values inside each netting set.
-7. Applies the positive exposure floor after netting.
-8. Calculates EE, 95% PFE and 99% PFE at each future date.
-9. Simulates counterparty hazard rates with a CIR model.
-10. Compares independent, moderate and severe Wrong-Way Risk scenarios.
-11. Calculates default-weighted EE/PFE and CVA.
+5. Revalues American options with Least-Squares Monte Carlo.
+6. Revalues fixed-for-floating swaps using Vasicek zero-coupon bond prices.
+7. Nets signed trade values inside each netting set.
+8. Applies the positive exposure floor after netting.
+9. Calculates EE, 95% PFE and 99% PFE at each future date.
+10. Simulates counterparty hazard rates with a CIR model.
+11. Compares independent, moderate and severe Wrong-Way Risk scenarios.
+12. Calculates default-weighted EE/PFE and CVA.
 
 ## Run the project
 
@@ -60,7 +61,8 @@ PROJECT3/
 |   |   `-- cir.py
 |   |-- pricing/
 |   |   |-- black_scholes.py
-|   |   `-- interest_rate_swap.py
+|   |   |-- interest_rate_swap.py
+|   |   `-- least_squares_monte_carlo.py
 |   |-- simulation.py
 |   |-- valuation.py
 |   |-- exposure.py
@@ -82,6 +84,16 @@ correlations all live in `data/`. Counterparty hazard, recovery and WWR
 correlations are stored in `data/counterparty_credit.csv`. Simulation controls
 such as the number of paths, random seed and PFE confidence levels are grouped
 in `config.py`.
+
+Option exercise style is also data-driven. `data/equity_options.csv` contains
+`exercise_style` and `exercise_dates_per_year`, so the portfolio can mix
+European and American equity options without changing the valuation engine.
+
+The American option code in `src/pricing/least_squares_monte_carlo.py` follows
+the same Longstaff-Schwartz idea used by the local reference repository: work
+backwards through the simulated paths, regress discounted future cashflows on a
+polynomial function of spot, and exercise when immediate value is above
+estimated continuation value.
 
 ## Wrong-Way Risk extension
 
@@ -144,7 +156,8 @@ netting.
 ## Scope and limitations
 
 - All trades are in USD, so no FX conversion is hidden in the aggregation.
-- The portfolio contains only European options and vanilla interest-rate swaps.
+- The portfolio contains European options, American options and vanilla
+  interest-rate swaps.
 - Exposure dates and swap payment dates are quarterly and aligned.
 - The option revaluation uses a pathwise Vasicek discount factor in the
   Black-Scholes formula. This is a transparent approximation, not a full joint
@@ -169,7 +182,7 @@ cd PROJECT3
 
 The tests cover Black-Scholes put-call parity, Vasicek and CIR behaviour,
 market-credit correlations, survival probabilities, weighted quantiles,
-netting order, and a small end-to-end simulation.
+American early exercise, netting order, and a small end-to-end simulation.
 
 ## Audit 4/08
 
@@ -376,6 +389,12 @@ the Black-Scholes formula. This is a useful approximation, but it is not a full
 equity-interest-rate hybrid model and does not capture all effects of stochastic
 rates and equity-rate correlation on option value. Volatility is also constant,
 so volatility smiles, surfaces and forward term structures are absent.
+
+American options are valued with a simple Longstaff-Schwartz regression on the
+same simulated market paths. This demonstrates early-exercise logic and lets PFE
+include path-dependent exercise decisions, but the result depends on the chosen
+basis functions, path count and exercise grid. It is not benchmarked against a
+production American-option library.
 
 The Vasicek model allows negative rates and is driven by a single short-rate
 factor. The CIR credit model is simulated using a time-discretisation method and

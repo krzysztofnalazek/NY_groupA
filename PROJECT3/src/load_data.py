@@ -48,6 +48,8 @@ def load_inputs():
             "quantity",
             "strike",
             "maturity_years",
+            "exercise_style",
+            "exercise_dates_per_year",
         ],
         "equity_options.csv",
     )
@@ -92,10 +94,15 @@ def load_inputs():
         raise ValueError("Option type must be call or put.")
     if not set(options["position"]).issubset({"long", "short"}):
         raise ValueError("Option position must be long or short.")
+    if not set(options["exercise_style"]).issubset({"european", "american"}):
+        raise ValueError("Exercise style must be european or american.")
     if not set(swaps["position"]).issubset({"payer", "receiver"}):
         raise ValueError("Swap position must be payer or receiver.")
     if (options[["quantity", "strike", "maturity_years"]] <= 0).any().any():
         raise ValueError("Option quantities, strikes and maturities must be positive.")
+    american_options = options["exercise_style"] == "american"
+    if (options.loc[american_options, "exercise_dates_per_year"] <= 0).any():
+        raise ValueError("American options need positive exercise_dates_per_year.")
     if (swaps[["notional", "maturity_years", "payments_per_year"]] <= 0).any().any():
         raise ValueError("Swap notionals, maturities and payment frequencies must be positive.")
 

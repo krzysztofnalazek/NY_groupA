@@ -1,7 +1,9 @@
-trade_id,netting_set,underlying,option_type,position,quantity,strike,maturity_years
-OPT001,NS_BANK_A,SP500,call,long,2000,5000,2.0
-OPT002,NS_BANK_A,SP500,put,short,1500,4700,2.0
-OPT003,NS_BANK_B,NASDAQ100,put,long,700,17500,3.0
-OPT004,NS_BANK_B,RUSSELL2000,call,short,2500,2100,1.5
-OPT005,NS_FUND_C,SP500,call,long,1000,5200,5.0
-OPT006,NS_FUND_C,NASDAQ100,call,short,300,19000,5.0
+trade_id,netting_set,underlying,option_type,position,quantity,strike,maturity_years,exercise_style,exercise_dates_per_year
+OPT001,NS_BANK_A,SP500,call,long,2000,5000,2.0,european,0
+OPT002,NS_BANK_A,SP500,put,short,1500,4700,2.0,european,0
+OPT003,NS_BANK_B,NASDAQ100,put,long,700,17500,3.0,european,0
+OPT004,NS_BANK_B,RUSSELL2000,call,short,2500,2100,1.5,european,0
+OPT005,NS_FUND_C,SP500,call,long,1000,5200,5.0,european,0
+OPT006,NS_FUND_C,NASDAQ100,call,short,300,19000,5.0,european,0
+OPT007,NS_BANK_B,NASDAQ100,put,long,400,18000,3.0,american,4
+OPT008,NS_FUND_C,SP500,call,long,500,5000,2.0,american,4
