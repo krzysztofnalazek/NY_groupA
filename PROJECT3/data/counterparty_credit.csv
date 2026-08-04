@@ -1,0 +1,4 @@
+counterparty,initial_hazard,long_run_hazard,mean_reversion,credit_volatility,recovery_rate,wwr_market_factor,wwr_correlation,severe_wwr_correlation,wwr_rate_correlation,severe_wwr_rate_correlation
+Bank A,0.015,0.018,0.70,0.060,0.40,SP500,0.40,0.70,0.00,0.00
+Bank B,0.025,0.030,0.80,0.080,0.40,NASDAQ100,-0.40,-0.70,-0.20,-0.30
+Fund C,0.020,0.024,0.65,0.070,0.35,SP500,0.40,0.70,0.00,0.00
